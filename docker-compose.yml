@@ -1,0 +1,22 @@
+version: "3.6"
+services:
+  database:
+    build: ./db
+    container_name: fas_db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=fas
+      - POSTGRES_USER=fas
+      - POSTGRES_PASSWORD=fas   
+    volumes:
+      - fasdata:/var/lib/postgresql/data
+  flyway:
+    image: boxfuse/flyway:latest
+    command: -url=jdbc:postgresql://fas_db/fas -schemas=nwm -user=fas -password=fas -connectRetries=60 -baselineOnMigrate=true migrate
+    volumes:
+      - ./db/migrations:/flyway/sql
+    depends_on:
+      - database
+volumes:
+  fasdata:
